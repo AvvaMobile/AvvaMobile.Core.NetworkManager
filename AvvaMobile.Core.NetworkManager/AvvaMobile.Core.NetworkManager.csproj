@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>Avva Mobile Network Manager</Title>
+		<Authors>Avva Mobile Enterprise Solutions</Authors>
+		<Description>Developed to help developers to easy to manage their network tasks.</Description>
+		<PackageProjectUrl>https://github.com/AvvaMobile/AvvaMobile.Core</PackageProjectUrl>
+		<PackageIcon>avvamobile.png</PackageIcon>
+		<RepositoryUrl>https://github.com/AvvaMobile/AvvaMobile.Core</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>avvamobile;</PackageTags>
+		<NeutralLanguage>en</NeutralLanguage>
+		<RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+		<RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+		<EnableNETAnalyzers>False</EnableNETAnalyzers>
+		<Version>1.0.9</Version>
+		<GenerateDocumentationFile>False</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+	  <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="avvamobile.png">
+			<PackagePath>\</PackagePath>
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Pack>True</Pack>
+		</None>
+	</ItemGroup>
+
+</Project>
