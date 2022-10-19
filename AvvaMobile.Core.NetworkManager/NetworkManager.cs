@@ -107,8 +107,16 @@ namespace AvvaMobile.Core
                         sb.Append("&");
                     }
                 }
+                if (uri.IndexOf("?") > -1)
+                {
+                    uri = $"{client.BaseAddress}{uri}&{sb}";
+                }
+                else
+                {
+                    uri = $"{client.BaseAddress}{uri}?{sb}";
+                }
 
-                var resp = await client.GetAsync($"{client.BaseAddress}{uri}?{sb.ToString()}");
+                var resp = await client.GetAsync(uri);
                 response.IsSuccess = resp.IsSuccessStatusCode;
                 response.StatusCode = resp.StatusCode;
                 var responseString = await resp.Content.ReadAsStringAsync();
