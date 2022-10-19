@@ -137,7 +137,53 @@ namespace AvvaMobile.Core
 
             return response;
         }
+        public async Task<HttpResponse<string>> GetXMLStringAsync(string uri, Dictionary<string, string> parameters)
+        {
+            var response = new HttpResponse<string>();
 
+            try
+            {
+                var sb = new StringBuilder();
+                if (parameters != null && parameters.Count > 0)
+                {
+                    foreach (var param in parameters)
+                    {
+                        sb.Append(param.Key);
+                        sb.Append("=");
+                        sb.Append(param.Value);
+                        sb.Append("&");
+                    }
+                }
+                if (uri.IndexOf("?") > -1)
+                {
+                    uri = $"{client.BaseAddress}{uri}&{sb}";
+                }
+                else
+                {
+                    uri = $"{client.BaseAddress}{uri}?{sb}";
+                }
+
+                var resp = await client.GetAsync(uri);
+                response.IsSuccess = resp.IsSuccessStatusCode;
+                response.StatusCode = resp.StatusCode;
+                var responseString = await resp.Content.ReadAsStringAsync();
+                if (response.IsSuccess)
+                {
+                    response.Data = responseString;
+                }
+                else
+                {
+                    response.Message = responseString;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "HttpClient.GetAsync Error: " + ex.Message;
+            }
+
+            return response;
+        }
         /// <summary>
         /// Sends a POST request with data object. Also returns http response as String value.
         /// </summary>
