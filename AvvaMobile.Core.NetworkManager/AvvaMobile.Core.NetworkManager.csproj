@@ -7,9 +7,9 @@
 		<Title>Avva Mobile Network Manager</Title>
 		<Authors>Avva Mobile Enterprise Solutions</Authors>
 		<Description>Developed to help developers to easy to manage their network tasks.</Description>
-		<PackageProjectUrl>https://github.com/AvvaMobile/AvvaMobile.Core</PackageProjectUrl>
+		<PackageProjectUrl>https://github.com/AvvaMobile/AvvaMobile.Core.NetworkManager</PackageProjectUrl>
 		<PackageIcon>avvamobile.png</PackageIcon>
-		<RepositoryUrl>https://github.com/AvvaMobile/AvvaMobile.Core</RepositoryUrl>
+		<RepositoryUrl>https://github.com/AvvaMobile/AvvaMobile.Core.NetworkManager</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PackageTags>avvamobile;</PackageTags>
 		<NeutralLanguage>en</NeutralLanguage>
