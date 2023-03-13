@@ -137,6 +137,7 @@ namespace AvvaMobile.Core
 
             return response;
         }
+
         public async Task<HttpResponse<string>> GetXMLStringAsync(string uri, Dictionary<string, string> parameters)
         {
             var response = new HttpResponse<string>();
@@ -184,6 +185,7 @@ namespace AvvaMobile.Core
 
             return response;
         }
+
         /// <summary>
         /// Sends a POST request with data object. Also returns http response as String value.
         /// </summary>
@@ -200,6 +202,40 @@ namespace AvvaMobile.Core
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
                 var resp = await client.PostAsync($"{client.BaseAddress}{uri}", content);
+                response.IsSuccess = resp.IsSuccessStatusCode;
+                response.StatusCode = resp.StatusCode;
+                var responseString = await resp.Content.ReadAsStringAsync();
+                if (response.IsSuccess)
+                {
+                    response.Data = JsonConvert.DeserializeObject<T>(responseString);
+                }
+                else
+                {
+                    response.Message = responseString;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "HttpClient.PostAsync Error: " + ex.Message;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Sends a POST request with encoded data object (x-www-form-urlencoded). Also returns http response as T type value.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public async Task<HttpResponse<T>> PostEncodedAsync<T>(string uri, Dictionary<string, string> data)
+        {
+            var response = new HttpResponse<T>();
+
+            try
+            {
+                var resp = await client.PostAsync($"{client.BaseAddress}{uri}", new FormUrlEncodedContent(data));
                 response.IsSuccess = resp.IsSuccessStatusCode;
                 response.StatusCode = resp.StatusCode;
                 var responseString = await resp.Content.ReadAsStringAsync();
