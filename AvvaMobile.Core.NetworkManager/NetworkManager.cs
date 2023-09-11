@@ -9,6 +9,7 @@ namespace AvvaMobile.Core
         public bool IsSuccess { get; set; } = true;
         public string Message { get; set; }
         public HttpStatusCode StatusCode { get; set; }
+        public Exception Exception { get; set; }
     }
 
     public class HttpResponse<T> : HttpResponse
@@ -18,11 +19,10 @@ namespace AvvaMobile.Core
 
     public class NetworkManager
     {
-        readonly System.Net.Http.HttpClient client = new System.Net.Http.HttpClient();
+        private readonly HttpClient client = new HttpClient();
 
         public NetworkManager()
         {
-
         }
 
         public NetworkManager(string baseAddress)
@@ -107,14 +107,8 @@ namespace AvvaMobile.Core
                         sb.Append("&");
                     }
                 }
-                if (uri.IndexOf("?") > -1)
-                {
-                    uri = $"{client.BaseAddress}{uri}&{sb}";
-                }
-                else
-                {
-                    uri = $"{client.BaseAddress}{uri}?{sb}";
-                }
+
+                uri = uri.IndexOf("?") > -1 ? $"{client.BaseAddress}{uri}&{sb}" : $"{client.BaseAddress}{uri}?{sb}";
 
                 var resp = await client.GetAsync(uri);
                 response.IsSuccess = resp.IsSuccessStatusCode;
@@ -133,6 +127,33 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.GetAsync Error: " + ex.Message;
+                response.Exception = e;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Downloads the file to given path.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="outputPath"></param>
+        /// <returns></returns>
+        public async Task<HttpResponse> DownloadFile(string url, string outputPath)
+        {
+            var response = new HttpResponse<T>();
+
+            try
+            {
+                var fileBytes = await client.GetByteArrayAsync(url);
+                await File.WriteAllBytesAsync(outputPath, fileBytes);
+            }
+            catch (Exception e)
+            {
+                response.IsSuccess = false;
+                response.Message = "HttpClient.DownloadFile Error: " + e.Message;
+                response.StatusCode = HttpStatusCode.InternalServerError;
+                response.Exception = e;
             }
 
             return response;
@@ -155,6 +176,7 @@ namespace AvvaMobile.Core
                         sb.Append("&");
                     }
                 }
+
                 if (uri.IndexOf("?") > -1)
                 {
                     uri = $"{client.BaseAddress}{uri}&{sb}";
@@ -181,6 +203,7 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.GetAsync Error: " + ex.Message;
+                response.Exception = e;
             }
 
             return response;
@@ -218,6 +241,7 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.PostAsync Error: " + ex.Message;
+                response.Exception = e;
             }
 
             return response;
@@ -252,6 +276,7 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.PostAsync Error: " + ex.Message;
+                response.Exception = e;
             }
 
             return response;
@@ -289,6 +314,7 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.PutAsync Error: " + ex.Message;
+                response.Exception = e;
             }
 
             return response;
@@ -322,6 +348,7 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.PostAsync Error: " + ex.Message;
+                response.Exception = e;
             }
 
             return response;
@@ -356,6 +383,7 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.DeleteAsync Error: " + ex.Message;
+                response.Exception = e;
             }
 
             return response;
