@@ -159,6 +159,11 @@ namespace AvvaMobile.Core
             return response;
         }
 
+        public async Task<HttpResponse<string>> GetXMLStringAsync(string uri)
+        {
+            return await GetXMLStringAsync(uri, null);
+        }
+
         public async Task<HttpResponse<string>> GetXMLStringAsync(string uri, Dictionary<string, string> parameters)
         {
             var response = new HttpResponse<string>();
@@ -234,6 +239,45 @@ namespace AvvaMobile.Core
                 }
                 else
                 {
+                    response.Message = responseString;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "HttpClient.PostAsync Error: " + ex.Message;
+                response.Exception = ex;
+            }
+
+            return response;
+        }
+        
+        /// <summary>
+        /// Sends a POST request with data object. Also returns http response as String value.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public async Task<HttpResponse> PostAsync(string uri, dynamic data)
+        {
+            var response = new HttpResponse();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(data);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var resp = await client.PostAsync($"{client.BaseAddress}{uri}", content);
+                response.IsSuccess = resp.IsSuccessStatusCode;
+                response.StatusCode = resp.StatusCode;
+                
+                if (response.IsSuccess)
+                {
+                    
+                }
+                else
+                {
+                    var responseString = await resp.Content.ReadAsStringAsync();
                     response.Message = responseString;
                 }
             }
