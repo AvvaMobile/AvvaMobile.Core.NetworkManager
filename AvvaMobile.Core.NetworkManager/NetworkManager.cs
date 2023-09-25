@@ -1,6 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AvvaMobile.Core
 {
@@ -10,6 +14,9 @@ namespace AvvaMobile.Core
         public string Message { get; set; }
         public HttpStatusCode StatusCode { get; set; }
         public Exception Exception { get; set; }
+
+        public JsonSerializerOptions SerializerOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
     }
 
     public class HttpResponse<T> : HttpResponse
@@ -116,7 +123,7 @@ namespace AvvaMobile.Core
                 var responseString = await resp.Content.ReadAsStringAsync();
                 if (response.IsSuccess)
                 {
-                    response.Data = JsonConvert.DeserializeObject<T>(responseString);
+                    response.Data = await resp.Content.ReadFromJsonAsync<T>(response.SerializerOptions);
                 }
                 else
                 {
@@ -235,7 +242,7 @@ namespace AvvaMobile.Core
                 var responseString = await resp.Content.ReadAsStringAsync();
                 if (response.IsSuccess)
                 {
-                    response.Data = JsonConvert.DeserializeObject<T>(responseString);
+                    response.Data = await resp.Content.ReadFromJsonAsync<T>(response.SerializerOptions);
                 }
                 else
                 {
@@ -309,7 +316,7 @@ namespace AvvaMobile.Core
                 var responseString = await resp.Content.ReadAsStringAsync();
                 if (response.IsSuccess)
                 {
-                    response.Data = JsonConvert.DeserializeObject<T>(responseString);
+                    response.Data = await resp.Content.ReadFromJsonAsync<T>(response.SerializerOptions);
                 }
                 else
                 {
@@ -347,7 +354,7 @@ namespace AvvaMobile.Core
                 var responseString = await resp.Content.ReadAsStringAsync();
                 if (response.IsSuccess)
                 {
-                    response.Data = JsonConvert.DeserializeObject<T>(responseString);
+                    response.Data = await resp.Content.ReadFromJsonAsync<T>(response.SerializerOptions);
                 }
                 else
                 {
@@ -381,7 +388,7 @@ namespace AvvaMobile.Core
                 var responseString = await resp.Content.ReadAsStringAsync();
                 if (response.IsSuccess)
                 {
-                    response.Data = JsonConvert.DeserializeObject<T>(responseString);
+                    response.Data = await resp.Content.ReadFromJsonAsync<T>(response.SerializerOptions);
                 }
                 else
                 {
@@ -427,6 +434,83 @@ namespace AvvaMobile.Core
             {
                 response.IsSuccess = false;
                 response.Message = "HttpClient.DeleteAsync Error: " + ex.Message;
+                response.Exception = ex;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Sends a PATCH request with data object. Also returns http response as String value.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public async Task<HttpResponse<T>> PatchAsync<T>(string uri, dynamic data)
+        {
+            var response = new HttpResponse<T>();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(data);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var resp = await client.PatchAsync($"{client.BaseAddress}{uri}", content);
+                response.IsSuccess = resp.IsSuccessStatusCode;
+                response.StatusCode = resp.StatusCode;
+                var responseString = await resp.Content.ReadAsStringAsync();
+                if (response.IsSuccess)
+                {
+                    response.Data = await resp.Content.ReadFromJsonAsync<T>(response.SerializerOptions);
+                }
+                else
+                {
+                    response.Message = responseString;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "HttpClient.PatchAsync Error: " + ex.Message;
+                response.Exception = ex;
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Sends a PATCH request with data object. Also returns http response as String value.
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public async Task<HttpResponse> PatchAsync(string uri, dynamic data)
+        {
+            var response = new HttpResponse();
+
+            try
+            {
+                var json = JsonConvert.SerializeObject(data);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var resp = await client.PatchAsync($"{client.BaseAddress}{uri}", content);
+                response.IsSuccess = resp.IsSuccessStatusCode;
+                response.StatusCode = resp.StatusCode;
+
+                if (response.IsSuccess)
+                {
+
+                }
+                else
+                {
+                    var responseString = await resp.Content.ReadAsStringAsync();
+                    response.Message = responseString;
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "HttpClient.PatchAsync Error: " + ex.Message;
                 response.Exception = ex;
             }
 
