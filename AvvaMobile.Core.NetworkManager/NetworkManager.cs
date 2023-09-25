@@ -510,7 +510,7 @@ namespace AvvaMobile.Core
             catch (HttpRequestException ex)
             {
                 response.IsSuccess = false;
-                response.Message = "HttpClient.PostAsync Error: " + ex.Message;
+                response.Message = "HttpClient.PatchAsync Error: " + ex.Message;
                 response.Exception = ex;
             }
 
